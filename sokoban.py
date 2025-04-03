@@ -62,6 +62,82 @@ def drawLevel(matrix_to_draw):
     
     pygame.display.update()
 
+def movePlayer(direction, myLevel):
+    global target_found
+    
+    # Get current matrix and add to history
+    matrix = myLevel.getMatrix()
+    myLevel.addToHistory(matrix)
+    
+    # Get player position
+    player_pos = myLevel.getPlayerPosition()
+    if not player_pos:
+        return
+    
+    x, y = player_pos
+    new_x, new_y = x, y
+    
+    # Calculate new position based on direction
+    if direction == "L":
+        new_x -= 1
+    elif direction == "R":
+        new_x += 1
+    elif direction == "U":
+        new_y -= 1
+    elif direction == "D":
+        new_y += 1
+    
+    # Check what's in the new position
+    target_cell = matrix[new_y][new_x]
+    
+    # Handle empty space
+    if target_cell == " ":
+        matrix[y][x] = "." if target_found else " "
+        matrix[new_y][new_x] = "@"
+        target_found = False
+    
+    # Handle box
+    elif target_cell in ["$", "*"]:
+        box_x = new_x + (new_x - x)
+        box_y = new_y + (new_y - y)
+        box_target = matrix[box_y][box_x]
+        
+        if box_target == " ":
+            # Move box to empty space
+            matrix[box_y][box_x] = "$"
+            matrix[new_y][new_x] = "@"
+            matrix[y][x] = "." if target_found else " "
+            target_found = False
+        elif box_target == ".":
+            # Move box to target
+            matrix[box_y][box_x] = "*"
+            matrix[new_y][new_x] = "@"
+            matrix[y][x] = "." if target_found else " "
+            target_found = False
+    
+    # Handle target
+    elif target_cell == ".":
+        matrix[y][x] = "." if target_found else " "
+        matrix[new_y][new_x] = "@"
+        target_found = True
+    
+    # Handle wall
+    elif target_cell == "#":
+        return
+    
+    # Update display
+    drawLevel(matrix)
+    
+    # Print remaining boxes
+    print("Boxes remaining: " + str(len(myLevel.getBoxes())))
+    
+    # Check if level is complete
+    if len(myLevel.getBoxes()) == 0:
+        print("Level completed!")
+        global current_level
+        current_level += 1
+        initLevel(level_set, current_level)
+
 def initLevel(level_set, level_num):
     global myLevel
     myLevel = Level(level_set, level_num)
@@ -82,6 +158,24 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    movePlayer("L", myLevel)
+                elif event.key == pygame.K_RIGHT:
+                    movePlayer("R", myLevel)
+                elif event.key == pygame.K_UP:
+                    movePlayer("U", myLevel)
+                elif event.key == pygame.K_DOWN:
+                    movePlayer("D", myLevel)
+                elif event.key == pygame.K_u:
+                    last_matrix = myLevel.getLastMatrix()
+                    if last_matrix:
+                        drawLevel(last_matrix)
+                elif event.key == pygame.K_r:
+                    initLevel(level_set, current_level)
+                elif event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
         
         time.sleep(0.1)  # Basic frame rate control
 
