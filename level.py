@@ -20,4 +20,30 @@ class Level:
                 self.matrix.append(list(row))
     
     def __del__(self):
-        pass  # Basic destructor, no specific cleanup needed yet 
+        pass  # Basic destructor, no specific cleanup needed yet
+    
+    def getMatrix(self):
+        return self.matrix
+    
+    def addToHistory(self, matrix):
+        self.matrix_history.append([row[:] for row in matrix])
+    
+    def getLastMatrix(self):
+        if self.matrix_history:
+            return self.matrix_history.pop()
+        return None
+    
+    def getPlayerPosition(self):
+        for y, row in enumerate(self.matrix):
+            for x, cell in enumerate(row):
+                if cell == '@':
+                    return [x, y]
+        return None
+    
+    def getBoxes(self):
+        boxes = []
+        for y, row in enumerate(self.matrix):
+            for x, cell in enumerate(row):
+                if cell == '$':
+                    boxes.append([x, y])
+        return boxes 
