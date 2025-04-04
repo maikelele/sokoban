@@ -87,6 +87,10 @@ def movePlayer(direction, myLevel):
     elif direction == "D":
         new_y += 1
     
+    # Check if the new position is within bounds
+    if new_y < 0 or new_y >= len(matrix) or new_x < 0 or new_x >= len(matrix[0]):
+        return
+    
     # Check what's in the new position
     target_cell = matrix[new_y][new_x]
     
@@ -98,10 +102,25 @@ def movePlayer(direction, myLevel):
     
     # Handle box
     elif target_cell in ["$", "*"]:
+        # Calculate the position behind the box
         box_x = new_x + (new_x - x)
         box_y = new_y + (new_y - y)
+        
+        # Check if the position behind the box is within bounds
+        if box_y < 0 or box_y >= len(matrix) or box_x < 0 or box_x >= len(matrix[0]):
+            return
+            
         box_target = matrix[box_y][box_x]
         
+        # Check if there's another box behind this one
+        if box_target in ["$", "*"]:
+            return
+            
+        # Check if there's a wall behind the box
+        if box_target == "#":
+            return
+        
+        # Move the box
         if box_target == " ":
             # Move box to empty space
             matrix[box_y][box_x] = "$"
