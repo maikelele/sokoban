@@ -152,9 +152,18 @@ def movePlayer(direction, myLevel):
     
     # Check if level is complete
     if len(myLevel.getBoxes()) == 0:
-        print("Level completed!")
+        # Fill screen with black
+        myEnvironment.screen.fill((0, 0, 0))
+        pygame.display.update()
+        
+        # Print level completed message
+        print("Level Completed")
+        
+        # Increment level counter
         global current_level
         current_level += 1
+        
+        # Initialize next level
         initLevel(level_set, current_level)
 
 def initLevel(level_set, level_num):
