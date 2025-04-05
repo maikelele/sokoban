@@ -8,7 +8,7 @@ from level import Level
 myEnvironment = None
 myLevel = None
 theme = "default"
-level_set = "set1"
+level_set = "original"
 current_level = 1
 target_found = False
 
@@ -158,9 +158,16 @@ def movePlayer(direction, myLevel):
         initLevel(level_set, current_level)
 
 def initLevel(level_set, level_num):
-    global myLevel
+    global myLevel, target_found
+    
+    # Create a new instance of Level
     myLevel = Level(level_set, level_num)
-    drawLevel(myLevel.matrix)
+    
+    # Draw the initial level state
+    drawLevel(myLevel.getMatrix())
+    
+    # Reset target_found flag
+    target_found = False
 
 def main():
     global myEnvironment
