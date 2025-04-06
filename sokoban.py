@@ -203,9 +203,9 @@ def main():
                 elif event.key == pygame.K_DOWN:
                     movePlayer("D", myLevel)
                 elif event.key == pygame.K_u:
+                    # Undo last move
                     last_matrix = myLevel.getLastMatrix()
-                    if last_matrix:
-                        drawLevel(last_matrix)
+                    drawLevel(last_matrix)
                 elif event.key == pygame.K_r:
                     initLevel(level_set, current_level)
                 elif event.key == pygame.K_ESCAPE:
