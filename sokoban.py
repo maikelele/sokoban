@@ -1,13 +1,14 @@
 import pygame
 import time
 import sys
+import os
 from environment import Environment
 from level import Level
 
 # Global variables
 myEnvironment = None
 myLevel = None
-theme = "default"
+theme = "default"  # Default theme
 level_set = "original"
 current_level = 1
 target_found = False
@@ -17,12 +18,12 @@ def drawLevel(matrix_to_draw):
     
     # Load images for different level elements
     base_path = myEnvironment.getPath()
-    wall = pygame.image.load(f"{base_path}/themes/{theme}/wall.png")
-    box = pygame.image.load(f"{base_path}/themes/{theme}/box.png")
-    box_on_target = pygame.image.load(f"{base_path}/themes/{theme}/box_on_target.png")
-    floor = pygame.image.load(f"{base_path}/themes/{theme}/floor.png")
-    target = pygame.image.load(f"{base_path}/themes/{theme}/target.png")
-    player = pygame.image.load(f"{base_path}/themes/{theme}/player.png")
+    wall = pygame.image.load(f"{base_path}/themes/{theme}/images/wall.png").convert()
+    box = pygame.image.load(f"{base_path}/themes/{theme}/images/box.png").convert()
+    box_on_target = pygame.image.load(f"{base_path}/themes/{theme}/images/box_on_target.png").convert()
+    floor = pygame.image.load(f"{base_path}/themes/{theme}/images/floor.png").convert()
+    target = pygame.image.load(f"{base_path}/themes/{theme}/images/target.png").convert()
+    player = pygame.image.load(f"{base_path}/themes/{theme}/images/player.png").convert()
     
     # Get level size and screen size
     level_width = len(matrix_to_draw[0])
@@ -177,6 +178,22 @@ def initLevel(level_set, level_num):
     
     # Reset target_found flag
     target_found = False
+
+def getAvailableThemes():
+    """Get a list of available themes from the themes directory."""
+    base_path = myEnvironment.getPath()
+    themes_dir = os.path.join(base_path, 'themes')
+    
+    if not os.path.exists(themes_dir):
+        return ["default"]
+    
+    themes = []
+    for theme_name in os.listdir(themes_dir):
+        theme_path = os.path.join(themes_dir, theme_name)
+        if os.path.isdir(theme_path) and os.path.exists(os.path.join(theme_path, 'images')):
+            themes.append(theme_name)
+    
+    return themes if themes else ["default"]
 
 def main():
     global myEnvironment
