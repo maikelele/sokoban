@@ -26,12 +26,19 @@ class Level:
         return self.matrix
     
     def addToHistory(self, matrix):
+        # Create a deep copy of the matrix to store in history
         self.matrix_history.append([row[:] for row in matrix])
     
     def getLastMatrix(self):
-        if self.matrix_history:
-            return self.matrix_history.pop()
-        return None
+        # Check if there are any states in history
+        if len(self.matrix_history) > 0:
+            # Get and remove the last state from history
+            lastMatrix = self.matrix_history.pop()
+            # Update the current matrix with the last state
+            self.matrix = lastMatrix
+            return lastMatrix
+        # If no history, return current matrix
+        return self.matrix
     
     def getPlayerPosition(self):
         for y, row in enumerate(self.matrix):
