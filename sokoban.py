@@ -30,19 +30,35 @@ def drawLevel(matrix_to_draw):
     level_height = len(matrix_to_draw)
     screen_width, screen_height = myEnvironment.size
     
-    # Calculate scaling if needed
-    box_size = wall.get_width()
-    scale = min(screen_width / (level_width * box_size),
-                screen_height / (level_height * box_size))
+    # Get original image size
+    original_size = wall.get_width()
     
+    # Calculate optimal scaling to ensure the level fits on screen
+    # We need to consider both width and height constraints
+    width_scale = screen_width / (level_width * original_size)
+    height_scale = screen_height / (level_height * original_size)
+    
+    # Use the smaller scale to ensure the level fits in both dimensions
+    scale = min(width_scale, height_scale)
+    
+    # Apply scaling if needed (when scale < 1)
+    # We always scale down, but never up to avoid pixelation
     if scale < 1:
-        wall = pygame.transform.scale(wall, (int(box_size * scale), int(box_size * scale)))
-        box = pygame.transform.scale(box, (int(box_size * scale), int(box_size * scale)))
-        box_on_target = pygame.transform.scale(box_on_target, (int(box_size * scale), int(box_size * scale)))
-        floor = pygame.transform.scale(floor, (int(box_size * scale), int(box_size * scale)))
-        target = pygame.transform.scale(target, (int(box_size * scale), int(box_size * scale)))
-        player = pygame.transform.scale(player, (int(box_size * scale), int(box_size * scale)))
-        box_size = int(box_size * scale)
+        new_size = int(original_size * scale)
+        
+        # Scale all images to the new size
+        wall = pygame.transform.scale(wall, (new_size, new_size))
+        box = pygame.transform.scale(box, (new_size, new_size))
+        box_on_target = pygame.transform.scale(box_on_target, (new_size, new_size))
+        floor = pygame.transform.scale(floor, (new_size, new_size))
+        target = pygame.transform.scale(target, (new_size, new_size))
+        player = pygame.transform.scale(player, (new_size, new_size))
+        
+        # Update box_size for drawing calculations
+        box_size = new_size
+    else:
+        # If no scaling needed, use original size
+        box_size = original_size
     
     # Create mapping of level elements to images
     images = {
@@ -54,11 +70,19 @@ def drawLevel(matrix_to_draw):
         '*': box_on_target
     }
     
+    # Calculate total level dimensions after scaling
+    total_width = level_width * box_size
+    total_height = level_height * box_size
+    
+    # Calculate centering offsets to position the level in the middle of the screen
+    offset_x = (screen_width - total_width) // 2
+    offset_y = (screen_height - total_height) // 2
+    
     # Draw the level
     for y, row in enumerate(matrix_to_draw):
         for x, cell in enumerate(row):
-            pos_x = x * box_size
-            pos_y = y * box_size
+            pos_x = offset_x + (x * box_size)
+            pos_y = offset_y + (y * box_size)
             myEnvironment.screen.blit(images[cell], (pos_x, pos_y))
     
     pygame.display.update()
