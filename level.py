@@ -1,3 +1,5 @@
+# level.py
+
 import os
 
 class Level:
@@ -24,6 +26,11 @@ class Level:
     
     def getMatrix(self):
         return self.matrix
+    
+    def getSize(self):
+        # Return level dimensions as [max_row_length, number_of_rows]
+        max_row_length = max(len(row) for row in self.matrix)
+        return [max_row_length, len(self.matrix)]
     
     def addToHistory(self, matrix):
         # Create a deep copy of the matrix to store in history
